@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <!-- Desativa a inclusão automática de itens de compilação padrão -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="DAL\Clientes\Procedures\fi_sp_alterar_beneficiario.sql" />
+    <None Remove="DAL\Clientes\Procedures\fi_sp_consultar_beneficiario.sql" />
+    <None Remove="DAL\Clientes\Procedures\fi_sp_deletar_beneficiario.sql" />
+    <None Remove="DAL\Clientes\Procedures\fi_sp_incluir_beneficiario.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Adicione as referências dos pacotes necessários -->
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.32">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Npgsql" Version="8.0.2" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+    <!-- Adicione outras referências de pacotes conforme necessário -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Inclua suas referências de assemblies aqui -->
+    <Reference Include="System.Configuration" />
+    <!-- Remova a referência redundante ao Entity Framework -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Inclua seus arquivos de código-fonte aqui -->
+    <Compile Include="BLL\BoBeneficiario.cs" />
+    <Compile Include="BLL\BoCliente.cs" />
+    <Compile Include="DAL\AppDbContext.cs" />
+    <Compile Include="DAL\Clientes\DaoBeneficiarios.cs" />
+    <Compile Include="DAL\Clientes\DaoCliente.cs" />
+    <Compile Include="DAL\Padrao\FI.AcessoDados.cs" />
+    <Compile Include="DML\Beneficiario.cs" />
+    <Compile Include="DML\Cliente.cs" />
+    <Compile Include="helpers\VerificarCPF.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Inclua seus arquivos de recursos incorporados aqui -->
+    <EmbeddedResource Include="DAL\Clientes\Procedures\fi_sp_consultar_beneficiario.sql" />
+    <EmbeddedResource Include="DAL\Clientes\Procedures\fi_sp_alterar_beneficiario.sql" />
+    <EmbeddedResource Include="DAL\Clientes\Procedures\fi_sp_deletar_beneficiario.sql" />
+    <EmbeddedResource Include="DAL\Clientes\Procedures\fi_sp_incluir_beneficiario.sql" />
+    <EmbeddedResource Include="DAL\Clientes\Procedures\FI_SP_PesqCliente.sql" />
+    <EmbeddedResource Include="DAL\Clientes\Procedures\FI_SP_DelCliente.sql" />
+    <EmbeddedResource Include="DAL\Clientes\Procedures\FI_SP_ConsCliente.sql" />
+    <EmbeddedResource Include="DAL\Clientes\Procedures\FI_SP_AltCliente.sql" />
+    <EmbeddedResource Include="DAL\Clientes\Procedures\FI_SP_IncCliente.sql" />
+  </ItemGroup>
+
+</Project>
