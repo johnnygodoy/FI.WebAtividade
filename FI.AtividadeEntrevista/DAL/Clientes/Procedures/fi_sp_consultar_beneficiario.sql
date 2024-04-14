@@ -1,64 +1,18 @@
-﻿DELIMITER //
-
-CREATE PROCEDURE fi_sp_consultar_beneficiario(
-    IN p_id BIGINT,
-    OUT p_nome VARCHAR(255),
-    OUT p_sobrenome VARCHAR(255),
-    OUT p_nacionalidade VARCHAR(255),
-    OUT p_cep VARCHAR(255),
-    OUT p_estado VARCHAR(255),
-    OUT p_cidade VARCHAR(255),
-    OUT p_logradouro VARCHAR(255),
-    OUT p_email VARCHAR(255),
-    OUT p_telefone VARCHAR(255),
-    OUT p_cpf CHAR(14)
+﻿CREATE DEFINER=`root`@`localhost` PROCEDURE `fiatividade`.`fi_sp_consultar_beneficiario`(
+    IN p_cpf CHAR(14),
+    OUT p_existe_beneficiario BOOLEAN
 )
 BEGIN
-    DECLARE done INT DEFAULT 0;
-    DECLARE v_nome VARCHAR(255);
-    DECLARE v_sobrenome VARCHAR(255);
-    DECLARE v_nacionalidade VARCHAR(255);
-    DECLARE v_cep VARCHAR(255);
-    DECLARE v_estado VARCHAR(255);
-    DECLARE v_cidade VARCHAR(255);
-    DECLARE v_logradouro VARCHAR(255);
-    DECLARE v_email VARCHAR(255);
-    DECLARE v_telefone VARCHAR(255);
-    DECLARE v_cpf CHAR(14);
-    
-    DECLARE cur CURSOR FOR
-        SELECT nome, sobrenome, nacionalidade, cep, estado, cidade, logradouro, email, telefone, cpf
-        FROM beneficiario WHERE id = p_id;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    DECLARE v_id_cliente INT;
 
-    OPEN cur;
-    FETCH cur INTO v_nome, v_sobrenome, v_nacionalidade, v_cep, v_estado, v_cidade, v_logradouro, v_email, v_telefone, v_cpf;
+    -- Verificar se existe um cliente com o CPF fornecido
+    SELECT Id INTO v_id_cliente FROM clientes WHERE CPF = p_cpf;
 
-    IF done THEN
-        CLOSE cur;
-        SET p_nome = NULL;
-        SET p_sobrenome = NULL;
-        SET p_nacionalidade = NULL;
-        SET p_cep = NULL;
-        SET p_estado = NULL;
-        SET p_cidade = NULL;
-        SET p_logradouro = NULL;
-        SET p_email = NULL;
-        SET p_telefone = NULL;
-        SET p_cpf = NULL;
+    -- Verificar se existe um beneficiário associado ao cliente
+    IF v_id_cliente IS NOT NULL THEN
+        SET p_existe_beneficiario = TRUE;
     ELSE
-        CLOSE cur;
-        SET p_nome = v_nome;
-        SET p_sobrenome = v_sobrenome;
-        SET p_nacionalidade = v_nacionalidade;
-        SET p_cep = v_cep;
-        SET p_estado = v_estado;
-        SET p_cidade = v_cidade;
-        SET p_logradouro = v_logradouro;
-        SET p_email = v_email;
-        SET p_telefone = v_telefone;
-        SET p_cpf = v_cpf;
+        SET p_existe_beneficiario = FALSE;
     END IF;
-END //
-
-DELIMITER ;
+    
+END;

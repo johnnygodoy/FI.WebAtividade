@@ -1,49 +1,26 @@
-﻿DELIMITER //
-
-CREATE PROCEDURE sp_altcliente(
-    IN p_NOME VARCHAR(255),
+﻿CREATE DEFINER=`root`@`localhost` PROCEDURE `fiatividade`.`FI_SP_AltCliente`(
+    IN p_NOME VARCHAR(50),
     IN p_SOBRENOME VARCHAR(255),
-    IN p_NACIONALIDADE VARCHAR(255),
-    IN p_CEP VARCHAR(10),
-    IN p_ESTADO VARCHAR(255),
-    IN p_CIDADE VARCHAR(255),
-    IN p_LOGRADOURO VARCHAR(255),
-    IN p_EMAIL VARCHAR(255),
-    IN p_TELEFONE VARCHAR(20),
-    IN p_CPF CHAR(11), 
-    IN p_ID BIGINT
+    IN p_NACIONALIDADE VARCHAR(50),
+    IN p_CEP VARCHAR(9),
+    IN p_ESTADO VARCHAR(2),
+    IN p_CIDADE VARCHAR(50),
+    IN p_LOGRADOURO VARCHAR(500),
+    IN p_EMAIL VARCHAR(2079),
+    IN p_TELEFONE VARCHAR(15),
+    IN p_Id BIGINT
 )
 BEGIN
-    UPDATE Clientes 
+    UPDATE clientes 
     SET 
-        Nome = p_NOME, 
-        Sobrenome = p_SOBRENOME, 
-        Nacionalidade = p_NACIONALIDADE, 
-        CEP = p_CEP, 
-        Estado = p_ESTADO, 
-        Cidade = p_CIDADE, 
-        Logradouro = p_LOGRADOURO, 
-        Email = p_EMAIL, 
-        Telefone = p_TELEFONE,
-        CPF = p_CPF  
-    WHERE Id = p_ID;
-END //
-
-DELIMITER //
-
-CREATE PROCEDURE sp_altbeneficiario(
-    IN p_CPF CHAR(11),
-    IN p_NOME VARCHAR(255),
-    IN p_IdCliente BIGINT,
-    IN p_ID BIGINT
-)
-BEGIN
-    UPDATE Beneficiario 
-    SET 
-        CPF = p_CPF,
         Nome = p_NOME,
-        IdCliente = p_IdCliente
-    WHERE Id = p_ID;
-END //
-
-DELIMITER ;
+        Sobrenome = p_SOBRENOME,
+        Nacionalidade = p_NACIONALIDADE,
+        CEP = p_CEP,
+        Estado = p_ESTADO,
+        Cidade = p_CIDADE,
+        Logradouro = p_LOGRADOURO,
+        Email = p_EMAIL,
+        Telefone = p_TELEFONE
+    WHERE Id = p_Id;
+END;

@@ -1,50 +1,36 @@
-﻿DELIMITER //
-
-CREATE FUNCTION fi_sp_pesqcliente(
-    p_iniciarem INT,
+﻿CREATE PROCEDURE FI_SP_PesqCliente (
+    p_iniciarEm INT,
     p_quantidade INT,
-    p_campoordenacao TEXT,
+    p_campoOrdenacao VARCHAR(200),
     p_crescente BOOLEAN
 )
-RETURNS TABLE(
-    id BIGINT,
-    nome TEXT,
-    sobrenome TEXT,
-    nacionalidade TEXT,
-    cep TEXT,
-    estado TEXT,
-    cidade TEXT,
-    logradouro TEXT,
-    email TEXT,
-    telefone TEXT,
-    cpf TEXT
-)
 BEGIN
-    DECLARE v_order TEXT;
-
-    IF p_campoordenacao = 'EMAIL' THEN
-        SET v_order := 'EMAIL';
-    ELSEIF p_campoordenacao = 'CPF' THEN
-        SET v_order := 'CPF';
+    DECLARE ORDER_BY VARCHAR(50);
+    
+    IF (p_campoOrdenacao = 'EMAIL') THEN
+        SET ORDER_BY = 'EMAIL';
     ELSE
-        SET v_order := 'NOME';
+        SET ORDER_BY = 'NOME';
+    END IF;
+    
+    IF (p_crescente = 0) THEN
+        SET ORDER_BY = CONCAT(ORDER_BY, ' DESC');
+    ELSE
+        SET ORDER_BY = CONCAT(ORDER_BY, ' ASC');
     END IF;
 
-    IF NOT p_crescente THEN
-        SET v_order := CONCAT(v_order, ' DESC');
-    ELSE
-        SET v_order := CONCAT(v_order, ' ASC');
-    END IF;
+    SET @SCRIPT = CONCAT('SELECT ID, NOME, SOBRENOME, NACIONALIDADE, CEP, ESTADO, CIDADE, LOGRADOURO, EMAIL, TELEFONE 
+                        FROM (SELECT @row_number:=@row_number+1 AS RowNumber, ID, NOME, SOBRENOME, NACIONALIDADE, CEP, ESTADO, CIDADE, LOGRADOURO, EMAIL, TELEFONE 
+                              FROM CLIENTES, (SELECT @row_number:=0) AS rn 
+                              ORDER BY ', ORDER_BY, ') AS ClientesWithRowNumbers 
+                        WHERE RowNumber > ? AND RowNumber <= (?+?)');
 
-    RETURN (
-        SELECT id, nome, sobrenome, nacionalidade, cep, estado, cidade, logradouro, email, telefone, cpf 
-        FROM (
-            SELECT *, ROW_NUMBER() OVER (ORDER BY v_order) AS row 
-            FROM clientes
-        ) AS clienteswithrownumbers 
-        WHERE row > p_iniciarem AND row <= (p_iniciarem + p_quantidade) 
-        ORDER BY v_order
-    );
-END //
+    SET @iniciarEm = p_iniciarEm;
+    SET @quantidade = p_quantidade;
+    
+    PREPARE stmt FROM @SCRIPT;
+    EXECUTE stmt USING @iniciarEm, @iniciarEm, @quantidade;
+    DEALLOCATE PREPARE stmt;
 
-DELIMITER ;
+    SELECT COUNT(*) FROM CLIENTES;
+END;
