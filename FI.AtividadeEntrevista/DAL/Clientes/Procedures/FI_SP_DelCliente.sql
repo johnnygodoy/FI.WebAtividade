@@ -1,7 +1,8 @@
-﻿CREATE OR REPLACE PROCEDURE fi_sp_conscliente(_id BIGINT)
-LANGUAGE plpgsql
-AS $$
+﻿DELIMITER //
+
+CREATE PROCEDURE fi_sp_DelCliente(IN p_id BIGINT)
 BEGIN
-    DELETE FROM clientes WHERE ID = _id;
-END;
-$$;
+    DELETE FROM clientes WHERE ID = p_id;
+END //
+
+DELIMITER ;

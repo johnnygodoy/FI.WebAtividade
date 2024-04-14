@@ -39,7 +39,8 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
-                model.Id = bo.Incluir(new Cliente()
+                // Incluindo o cliente
+                long clienteId = bo.Incluir(new Cliente()
                 {
                     CEP = model.CEP,
                     Cidade = model.Cidade,
@@ -53,9 +54,20 @@ namespace WebAtividadeEntrevista.Controllers
                     CPF = model.CPF // Incluindo CPF
                 });
 
-                return Json("Cadastro efetuado com sucesso");
+                if (clienteId > 0)
+                {
+                    // Incluir o cliente foi bem-sucedido
+                    return Json("Cliente cadastrado com sucesso!");
+                }
+                else
+                {
+                    // Erro ao incluir o cliente
+                    Response.StatusCode = 500;
+                    return Json("Erro ao cadastrar o cliente");
+                }
             }
         }
+
 
         [HttpPost]
         public JsonResult Alterar(ClienteModel model)

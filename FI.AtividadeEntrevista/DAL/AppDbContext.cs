@@ -1,14 +1,14 @@
 ﻿using FI.AtividadeEntrevista.DML;
 using System.Data.Entity;
-
+using System.Data.SqlClient;
 
 namespace FI.AtividadeEntrevista.DAL
 {
     // Classe de contexto que representa o banco de dados
-    public class AppDbContext : System.Data.Entity.DbContext
+    public class AppDbContext : DbContext
     {
         // DbSet para a entidade Cliente
-        public System.Data.Entity.DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Cliente> Clientes { get; set; }
 
         // Construtor que permite passar a string de conexão para o DbContext
         public AppDbContext() : base("BancoDeDados")
@@ -26,5 +26,6 @@ namespace FI.AtividadeEntrevista.DAL
             modelBuilder.Entity<Cliente>().Property(c => c.CPF).HasMaxLength(11); // Definindo o tamanho máximo do CPF
             // Adicione outras configurações conforme necessário
         }
+
     }
 }

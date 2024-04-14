@@ -1,13 +1,13 @@
 ﻿using System.Data;
 using System.Collections.Generic;
-using Npgsql;
+using MySql.Data.MySqlClient;
 using System.Configuration;
 
 namespace FI.AtividadeEntrevista.DAL
 {
     internal class AcessoDados
     {
-        private string stringDeConexao
+        private string StringDeConexao
         {
             get
             {
@@ -19,9 +19,9 @@ namespace FI.AtividadeEntrevista.DAL
             }
         }
 
-        protected NpgsqlCommand CriarComando(NpgsqlConnection conn, string comandoSql, List<NpgsqlParameter> parametros, CommandType tipoComando)
+        protected MySqlCommand CriarComando(MySqlConnection conn, string comandoSql, List<MySqlParameter> parametros, CommandType tipoComando)
         {
-            var comando = new NpgsqlCommand(comandoSql, conn);
+            var comando = new MySqlCommand(comandoSql, conn);
             comando.CommandType = tipoComando;
 
             if (parametros != null)
@@ -35,14 +35,14 @@ namespace FI.AtividadeEntrevista.DAL
             return comando;
         }
 
-        internal void Executar(NpgsqlConnection conn, string NomeProcedure, List<NpgsqlParameter> parametros)
+        internal void Executar(MySqlConnection conn, string NomeProcedure, List<MySqlParameter> parametros)
         {
             if (conn.State != ConnectionState.Open)
             {
                 conn.Open();
             }
 
-            using (NpgsqlCommand comando = CriarComando(conn, NomeProcedure, parametros, CommandType.StoredProcedure))
+            using (MySqlCommand comando = CriarComando(conn, NomeProcedure, parametros, CommandType.StoredProcedure))
             {
                 comando.ExecuteNonQuery();
             }
@@ -50,24 +50,22 @@ namespace FI.AtividadeEntrevista.DAL
             conn.Close();
         }
 
-        internal DataSet Consultar(NpgsqlConnection conn, string NomeProcedure, List<NpgsqlParameter> parametros)
+        internal DataSet Consultar(MySqlConnection conn, string NomeProcedure, List<MySqlParameter> parametros)
         {
             if (conn.State != ConnectionState.Open)
             {
                 conn.Open();
             }
 
-            using (NpgsqlCommand comando = CriarComando(conn, NomeProcedure, parametros, CommandType.StoredProcedure))
+            using (MySqlCommand comando = CriarComando(conn, NomeProcedure, parametros, CommandType.StoredProcedure))
             {
-                using (NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(comando))
+                using (MySqlDataAdapter adapter = new MySqlDataAdapter(comando))
                 {
                     DataSet ds = new DataSet();
                     adapter.Fill(ds);
                     return ds;
                 }
             }
-
-            conn.Close();
         }
     }
 }

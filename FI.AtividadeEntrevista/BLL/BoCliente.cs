@@ -15,9 +15,9 @@ namespace FI.AtividadeEntrevista.BLL
         {
             _daoCliente = new DaoCliente();
             _verificarCpf = new VerificarCPF();
-        }      
+        }
 
-     
+
         public long Incluir(Cliente cliente)
         {
             if (!ValidarCliente(cliente))
@@ -30,10 +30,14 @@ namespace FI.AtividadeEntrevista.BLL
 
             if (_verificarCpf.VerificaCPF(cliente.CPF))
             {
-                throw new Exception("CPF já cadastrado.");
+                return _daoCliente.Incluir(cliente);
+            }
+            else
+            {
+                throw new Exception("CPF não é válido.");
             }
 
-            return _daoCliente.Incluir(cliente);
+
         }
 
         public void Alterar(Cliente cliente)
@@ -75,14 +79,14 @@ namespace FI.AtividadeEntrevista.BLL
 
         public List<Cliente> Pesquisa(int iniciarEm, int quantidade, string campoOrdenacao, bool crescente, out int qtd)
         {
-            // Mapeamento do campo de ordenação para o formato esperado pela função em PostgreSQL
-            string campoOrdenacaoPostgres = campoOrdenacao.ToLower(); // Garante que seja minúsculo
-            if (campoOrdenacaoPostgres != "email" && campoOrdenacaoPostgres != "cpf")
+
+            string ordenacao = campoOrdenacao.ToLower(); // Garante que seja minúsculo
+            if (ordenacao != "Email" && ordenacao != "CPF")
             {
-                campoOrdenacaoPostgres = "nome"; // Por padrão, ordena por nome
+                ordenacao = "Nome"; // Por padrão, ordena por nome
             }
 
-            return _daoCliente.Pesquisa(iniciarEm, quantidade, campoOrdenacaoPostgres, crescente, out qtd);
+            return _daoCliente.Pesquisa(iniciarEm, quantidade, campoOrdenacao, crescente, out qtd);
         }
 
     }

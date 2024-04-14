@@ -1,42 +1,41 @@
-﻿using Npgsql;
-using NpgsqlTypes;
+﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FI.AtividadeEntrevista.helpers
 {
     public class VerificarCPF
     {
-
-        public  bool VerificaCPF(string CPF)
+        public bool VerificaCPF(string CPF)
         {
-            using (var conn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
+            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
             {
                 if (conn.State != ConnectionState.Open)
                 {
                     conn.Open();
                 }
 
-                var comando = new NpgsqlCommand("fi_sp_verificacliente", conn);
+                var comando = new MySqlCommand("fi_sp_validar_cpf", conn);
                 comando.CommandType = CommandType.StoredProcedure;
 
-                var paramCPF = new NpgsqlParameter("cpf", NpgsqlDbType.Text);
+                var paramCPF = new MySqlParameter("cpf", MySqlDbType.VarChar);
                 paramCPF.Value = CPF;
                 comando.Parameters.Add(paramCPF);
 
-                var ds = new DataSet();
-                var da = new NpgsqlDataAdapter(comando);
-                da.Fill(ds);
+                var paramValido = new MySqlParameter("valido", MySqlDbType.Bit);
+                paramValido.Direction = ParameterDirection.Output;
+                comando.Parameters.Add(paramValido);
 
-                conn.Close(); // Fechar conexão após execução
+                comando.ExecuteNonQuery();
 
-                return ds.Tables[0].Rows.Count > 0;
+                int valido = Convert.ToInt32(comando.Parameters["valido"].Value);
+
+                conn.Close();
+
+                return valido == 1; // Retorna verdadeiro se o CPF for válido (retorno 1)
             }
         }
     }
+
 }

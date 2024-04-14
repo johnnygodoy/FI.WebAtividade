@@ -560,10 +560,6 @@
     <Content Include="Scripts\jtable\themes\basic\jtable_basic.less" />
     <Content Include="Views\Cliente\Alterar.cshtml" />
     <Content Include="Views\Cliente\Forms.cshtml" />
-    <Content Include="Views\Beneficiario\IndexBeneficiario.cshtml" />
-    <Content Include="Views\Beneficiario\AlterarBeneficiario.cshtml" />
-    <Content Include="Views\Beneficiario\FormsBeneficiario.cshtml" />
-    <Content Include="Views\Beneficiario\IncluirBeneficiario.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -1,33 +1,27 @@
-﻿using FI.AtividadeEntrevista.DAL;
-using FI.AtividadeEntrevista.DML;
-using Npgsql;
-using NpgsqlTypes;
+﻿using FI.AtividadeEntrevista.DML;
+using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System;
 using System.Linq;
-using System.Threading.Tasks;
-using FI.AtividadeEntrevista.BLL;
 
 namespace FI.AtividadeEntrevista.DAL.Clientes
 {
-    internal class DaoBeneficiarios: AcessoDados
+    internal class DaoBeneficiarios : AcessoDados
     {
         internal long Incluir(Beneficiario beneficiario)
         {
-            using (var conn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
+            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
             {
-                if (conn.State != ConnectionState.Open)
-                {
-                    conn.Open();
-                }
+                conn.Open();
 
-                var parametros = new List<NpgsqlParameter>
-            {
-                new NpgsqlParameter("_nome", NpgsqlDbType.Text) { Value = beneficiario.Nome },              
-                new NpgsqlParameter("_cpf", NpgsqlDbType.Char) { Value = beneficiario.CPF }
-            };
+                var parametros = new List<MySqlParameter>
+        {
+            new MySqlParameter("p_cpf", MySqlDbType.VarChar) { Value = beneficiario.CPF },
+            new MySqlParameter("p_nome", MySqlDbType.VarChar) { Value = beneficiario.Nome },
+            new MySqlParameter("p_id_cliente", MySqlDbType.VarChar) { Value = beneficiario.IdCliente }
+        };
 
                 var cmd = CriarComando(conn, "fi_sp_incluir_beneficiario", parametros, CommandType.StoredProcedure);
                 var resultado = cmd.ExecuteScalar();
@@ -36,50 +30,45 @@ namespace FI.AtividadeEntrevista.DAL.Clientes
             }
         }
 
-        internal Beneficiario Consultar(long Id)
-        {
-            using (var conn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
-            {
-                if (conn.State != ConnectionState.Open)
-                {
-                    conn.Open();
-                }
 
-                List<NpgsqlParameter> parametros = new List<NpgsqlParameter>
+        internal bool Consultar(string cpfCliente)
         {
-            new NpgsqlParameter("@_id", NpgsqlDbType.Bigint) { Value = Id }
+            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
+            {
+                conn.Open();
+
+                // Parâmetro de saída
+                MySqlParameter pExisteBeneficiario = new MySqlParameter("@p_existe_beneficiario", MySqlDbType.Bit);
+                pExisteBeneficiario.Direction = ParameterDirection.Output;
+
+                List<MySqlParameter> parametros = new List<MySqlParameter>
+        {
+            new MySqlParameter("@p_cpf", MySqlDbType.VarChar, 14) { Value = cpfCliente },
+            pExisteBeneficiario // Adicionando o parâmetro de saída à lista de parâmetros
         };
 
                 var ds = Consultar(conn, "fi_sp_consultar_beneficiario", parametros);
                 conn.Close(); // Fechar conexão após execução
 
-                // Verifica se há dados retornados e retorna o primeiro beneficiario encontrado, ou null se nenhum beneficiario for encontrado
-                if (ds.Tables[0].Rows.Count > 0)
-                {
-                    return Converter(ds).FirstOrDefault();
-                }
-                else
-                {
-                    return null;
-                }
+                // Retorna o valor booleano retornado pelo parâmetro de saída da stored procedure
+                return Convert.ToBoolean(pExisteBeneficiario.Value);
             }
         }
-      
+
+
+
         internal void Alterar(Beneficiario beneficiario)
         {
-            using (var conn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
+            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
             {
-                if (conn.State != ConnectionState.Open)
-                {
-                    conn.Open();
-                }
+                conn.Open();
 
-                var parametros = new List<NpgsqlParameter>
-            {
-                new NpgsqlParameter("_nome", NpgsqlDbType.Text) { Value = beneficiario.Nome },               
-                new NpgsqlParameter("_cpf", NpgsqlDbType.Char) { Value = beneficiario.CPF },
-                new NpgsqlParameter("_id", NpgsqlDbType.Bigint) { Value = beneficiario.Id }
-            };
+                var parametros = new List<MySqlParameter>
+                {
+                    new MySqlParameter("_id", MySqlDbType.Int64) { Value = beneficiario.Id },
+                    new MySqlParameter("_cpf", MySqlDbType.VarChar) { Value = beneficiario.CPF },
+                    new MySqlParameter("_nome", MySqlDbType.VarChar) { Value = beneficiario.Nome }
+                };
 
                 Executar(conn, "fi_sp_alterar_beneficiario", parametros);
                 conn.Close(); // Fechar conexão após execução
@@ -88,19 +77,16 @@ namespace FI.AtividadeEntrevista.DAL.Clientes
 
         internal void Excluir(long Id)
         {
-            using (var conn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
+            using (var conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["BancoDeDados"].ConnectionString))
             {
-                if (conn.State != ConnectionState.Open)
+                conn.Open();
+
+                var parametros = new List<MySqlParameter>
                 {
-                    conn.Open();
-                }
+                    new MySqlParameter("_id", MySqlDbType.Int64) { Value = Id }
+                };
 
-                var parametros = new List<NpgsqlParameter>
-            {
-                new NpgsqlParameter("_id", NpgsqlDbType.Bigint) { Value = Id }
-            };
-
-                Executar(conn, "fi_sp_delcliente", parametros);
+                Executar(conn, "fi_sp_excluir_beneficiario", parametros);
                 conn.Close(); // Fechar conexão após execução
             }
         }
@@ -112,11 +98,11 @@ namespace FI.AtividadeEntrevista.DAL.Clientes
             {
                 foreach (DataRow row in ds.Tables[0].Rows)
                 {
-                    var cli = new Beneficiario
+                    var beneficiario = new Beneficiario
                     {
-                        // Mapeamento dos dados para o objeto Cliente...
+                        // Mapeamento dos dados para o objeto Beneficiario...
                     };
-                    lista.Add(cli);
+                    lista.Add(beneficiario);
                 }
             }
             return lista;

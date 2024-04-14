@@ -29,10 +29,13 @@ namespace FI.AtividadeEntrevista.BLL
 
             if (_verificarCpf.VerificaCPF(beneficiario.CPF))
             {
-                throw new Exception("CPF já cadastrado.");
+                return _daoBeneficiarios.Incluir(beneficiario);
             }
-
-            return _daoBeneficiarios.Incluir(beneficiario);
+            else
+            {
+                throw new Exception("CPF não encontrado em nossa base de dados.");
+            }
+            
         }
 
         public void Alterar(Beneficiario beneficiario)
@@ -55,9 +58,9 @@ namespace FI.AtividadeEntrevista.BLL
             return _daoBeneficiarios.Listar();
         }
 
-        public Beneficiario Consultar(long id)
+        public bool Consultar(string cpfCliente)
         {
-            return _daoBeneficiarios.Consultar(id);
+            return _daoBeneficiarios.Consultar(cpfCliente);
         }
 
         public void Excluir(long id)
@@ -66,24 +69,10 @@ namespace FI.AtividadeEntrevista.BLL
         }
 
         private bool ValidarBeneficiario(Beneficiario beneficiario)
-        {
-            // Aqui você pode adicionar regras de validação do beneficiário, se necessário
+        {           
             return !string.IsNullOrWhiteSpace(beneficiario.Nome) &&
                    !string.IsNullOrWhiteSpace(beneficiario.CPF);
         }
-
-        // public List<Beneficiario> Pesquisa(string cpf)
-        // {
-        //     if (!string.IsNullOrEmpty(cpf))
-        //     {
-        //         // Se houver um CPF fornecido, realiza a pesquisa no DAO
-        //         return _daoBeneficiarios.Pesquisa(cpf);
-        //     }
-        //     else
-        //     {
-        //         // Caso contrário, retorna uma lista vazia
-        //         return new List<Beneficiario>();
-        //     }
-        // }
+   
     }
 }

@@ -11,6 +11,8 @@ namespace WebAtividadeEntrevista.Controllers
 {
     public class BeneficiarioController : Controller
     {
+        private BoBeneficiario bo = new BoBeneficiario();
+
         // GET: Beneficiario
         public ActionResult Index()
         {
@@ -23,34 +25,31 @@ namespace WebAtividadeEntrevista.Controllers
             return View();
         }
 
-        // GET: Beneficiario/Create
+        // GET: Beneficiario/Incluir
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Beneficiario/Create
+        // POST: Beneficiario/Incluir
         [HttpPost]
         public JsonResult Incluir(BeneficiarioModel model)
         {
-            BoBeneficiario bo = new BoBeneficiario();
-
             if (!ModelState.IsValid)
             {
                 List<string> erros = ModelState.Values.SelectMany(item => item.Errors.Select(error => error.ErrorMessage)).ToList();
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
-            else
-            {
-                model.Id = bo.Incluir(new Beneficiario
-                {
-                    Nome = model.Nome,
-                    CPF = model.CPF
-                });
 
-                return Json("Cadastro efetuado com sucesso");
-            }
+            model.Id = bo.Incluir(new Beneficiario
+            {
+                Nome = model.Nome,
+                CPF = model.CPF,
+                IdCliente = model.IdCliente
+            });
+
+            return Json("Cadastro efetuado com sucesso");
         }
 
         // GET: Beneficiario/Edit/5
@@ -101,6 +100,16 @@ namespace WebAtividadeEntrevista.Controllers
         public ActionResult FormsBeneficiario()
         {
             return View();
+        }
+
+        // POST: Beneficiario/VerificarBeneficiario
+        [HttpPost]
+        public JsonResult VerificarBeneficiario(string cpfCliente)
+        {
+            BoBeneficiario bo = new BoBeneficiario();
+            var existeBeneficiario = bo.Consultar(cpfCliente);
+
+            return Json(existeBeneficiario);
         }
     }
 }

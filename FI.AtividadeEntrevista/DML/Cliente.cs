@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -7,16 +8,45 @@ namespace FI.AtividadeEntrevista.DML
     public class Cliente
     {
         public long Id { get; set; }
+
+        [Required]
+        [StringLength(8)] // Defina o tamanho máximo do CEP
         public string CEP { get; set; }
+
+        [Required]
+        [StringLength(100)] // Defina o tamanho máximo da cidade
         public string Cidade { get; set; }
+
+        [Required]
+        [StringLength(100)] // Defina o tamanho máximo do e-mail
         public string Email { get; set; }
+
+        [Required]
+        [StringLength(2)] // Defina o tamanho máximo do estado
         public string Estado { get; set; }
+
+        [Required]
+        [StringLength(100)] // Defina o tamanho máximo do logradouro
         public string Logradouro { get; set; }
+
+        [Required]
+        [StringLength(100)] // Defina o tamanho máximo da nacionalidade
         public string Nacionalidade { get; set; }
+
+        [Required]
+        [StringLength(100)] // Defina o tamanho máximo do nome
         public string Nome { get; set; }
+
+        [Required]
+        [StringLength(100)] // Defina o tamanho máximo do sobrenome
         public string Sobrenome { get; set; }
+
+        [Required]
+        [StringLength(15)] // Defina o tamanho máximo do telefone
         public string Telefone { get; set; }
 
+        [Required]
+        [StringLength(11)] // Defina o tamanho máximo do CPF
         private string _cpf;
         public string CPF
         {

@@ -1,13 +1,14 @@
-﻿CREATE OR REPLACE PROCEDURE public.fi_sp_alterar_beneficiario(
-    _id BIGINT,
-    _cpf TEXT,
-    _nome TEXT
+﻿DELIMITER //
+
+CREATE PROCEDURE fi_sp_alterar_beneficiario(
+    IN p_id BIGINT,
+    IN p_cpf TEXT,
+    IN p_nome TEXT
 )
-LANGUAGE plpgsql
-AS $procedure$
 BEGIN
     UPDATE beneficiarios
-    SET cpf = _cpf, nome = _nome
-    WHERE id = _id;
-END;
-$procedure$;
+    SET cpf = p_cpf, nome = p_nome
+    WHERE id = p_id;
+END //
+
+DELIMITER ;

@@ -1,22 +1,12 @@
-﻿CREATE OR REPLACE FUNCTION fi_sp_conscliente(_ID BIGINT)
-RETURNS TABLE(
-    NOME VARCHAR,
-    SOBRENOME VARCHAR,
-    NACIONALIDADE VARCHAR,
-    CEP VARCHAR,
-    ESTADO VARCHAR,
-    CIDADE VARCHAR,
-    LOGRADOURO VARCHAR,
-    EMAIL VARCHAR,
-    TELEFONE VARCHAR,
-    CPF CHAR(14), -- Adicionando o campo CPF no retorno
-    ID BIGINT
-) AS $$
+﻿DELIMITER //
+
+CREATE PROCEDURE sp_conscliente(IN p_ID BIGINT)
 BEGIN
-    IF _ID IS NULL OR _ID = 0 THEN
-        RETURN QUERY SELECT NOME, SOBRENOME, NACIONALIDADE, CEP, ESTADO, CIDADE, LOGRADOURO, EMAIL, TELEFONE, CPF, ID FROM clientes;
+    IF p_ID IS NULL OR p_ID = 0 THEN
+        SELECT Nome, Sobrenome, Nacionalidade, CEP, Estado, Cidade, Logradouro, Email, Telefone, CPF, Id FROM clientes;
     ELSE
-        RETURN QUERY SELECT NOME, SOBRENOME, NACIONALIDADE, CEP, ESTADO, CIDADE, LOGRADOURO, EMAIL, TELEFONE, CPF, ID FROM clientes WHERE ID = _ID;
+        SELECT Nome, Sobrenome, Nacionalidade, CEP, Estado, Cidade, Logradouro, Email, Telefone, CPF, Id FROM clientes WHERE Id = p_ID;
     END IF;
-END;
-$$ LANGUAGE plpgsql;
+END //
+
+DELIMITER ;

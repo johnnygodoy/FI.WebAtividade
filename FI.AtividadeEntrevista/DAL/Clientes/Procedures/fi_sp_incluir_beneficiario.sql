@@ -1,12 +1,13 @@
-﻿CREATE OR REPLACE PROCEDURE public.fi_sp_incluir_beneficiario(
-    _cpf TEXT,
-    _nome TEXT,
-    _id_cliente BIGINT
+﻿DELIMITER //
+
+CREATE PROCEDURE fi_sp_incluir_beneficiario(
+    IN p_cpf TEXT,
+    IN p_nome TEXT,
+    IN p_id_cliente BIGINT
 )
-LANGUAGE plpgsql
-AS $procedure$
 BEGIN
     INSERT INTO beneficiarios (cpf, nome, idcliente)
-    VALUES (_cpf, _nome, _id_cliente);
-END;
-$procedure$;
+    VALUES (p_cpf, p_nome, p_id_cliente);
+END //
+
+DELIMITER ;
